@@ -26,9 +26,11 @@ def fetch_lora():
 
 
 def fetch_model():
-    QwenImageEditPlusPipeline.from_pretrained(
+    pipe = QwenImageEditPlusPipeline.from_pretrained(
         "Qwen/Qwen-Image-Edit-2509", torch_dtype=torch.bfloat16
     )
+    pipe.load_lora_weights("models/material-transfer_000004769.safetensors",
+                           weight_dtype=torch.bfloat16)
 
 
 if __name__ == "__main__":
