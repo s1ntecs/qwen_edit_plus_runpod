@@ -11,6 +11,7 @@ RUN pip install --no-cache-dir diffusers transformers accelerate safetensors pil
 WORKDIR /app
 COPY rp_handler.py .
 COPY download_checkpoints.py .
+COPY models ./models
 
 RUN python download_checkpoints.py
 

@@ -11,7 +11,9 @@ from PIL import Image
 pipe = QwenImageEditPlusPipeline.from_pretrained(
     "Qwen/Qwen-Image-Edit-2509", torch_dtype=torch.bfloat16
 ).to("cuda")
-
+pipe.load_lora_weights("models/material-transfer_000004769.safetensors",
+                       weight_dtype=torch.bfloat16)
+# pipe.lora_scale = 0.5
 
 def pil_to_b64(img: Image.Image) -> str:
     buf = BytesIO()
