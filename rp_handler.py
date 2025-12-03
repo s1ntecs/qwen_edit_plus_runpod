@@ -29,6 +29,7 @@ def handler(job):
     try:
         input_data = job["input"]
         prompt = input_data.get("prompt", "Enhance the image")
+        negative_prompt = input_data.get("negative_prompt", "")
         image_urls = input_data.get("images")
         steps = input_data.get("steps", 20)
         cfg_scale = input_data.get("cfg_scale", 4)
@@ -43,6 +44,7 @@ def handler(job):
             output_image = pipe(image=input_images,
                                 num_inference_steps=steps,
                                 true_cfg_scale=cfg_scale,
+                                negative_prompt=negative_prompt,
                                 prompt=prompt).images[0]
             b_64_img = pil_to_b64(output_image)
 
