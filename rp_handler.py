@@ -112,7 +112,7 @@ def handler(job):
 
         return {
             "images_base64": [b_64_img],
-            "time": round(time.time() - job["created"],
+            "time": round(time.time() - job.get("created", start_time),
                           2) if "created" in job else None,
             "steps": steps,
             "seed": "N/A"
