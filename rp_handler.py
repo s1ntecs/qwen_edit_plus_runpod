@@ -5,12 +5,15 @@ import base64
 from io import BytesIO
 from PIL import Image
 
-from diffusers import QwenImageEditPlusPipeline, FlowMatchEulerDiscreteScheduler
+from diffusers import (QwenImageEditPlusPipeline,
+                       FlowMatchEulerDiscreteScheduler)
 from diffusers.models import QwenImageTransformer2DModel
 from diffusers.utils import load_image
 import torch
 import runpod
+from runpod.serverless.modules.rp_logger import RunPodLogger
 
+logger = RunPodLogger()
 
 # Load model on startup
 model = QwenImageTransformer2DModel.from_pretrained(
@@ -64,6 +67,10 @@ pipe.load_lora_weights(
 pipe.set_adapters(["material", "lightning"],
                   adapter_weights=[1.0, 1.0])
 
+# 3) Фьюзим их в базовые веса (одна матрица вместо базовой+LoRA)
+pipe.fuse_lora(adapter_names=["material", "lightning"],
+               lora_scale=1.0)
+
 pipe = pipe.to("cuda")
 
 
@@ -88,9 +95,11 @@ def handler(job):
         if not image_urls:
             return {"error": "Missing 'images' parameter."}
 
+        start_time = time.time()
         input_images = []
         for image_url in image_urls:
             input_images.append(load_image(image_url))
+        logger.info(f"IMAGES DOWNLOADED FOR: {(time.time()) - start_time}")
         with torch.inference_mode(), torch.autocast("cuda",
                                                     dtype=torch.bfloat16):
             output_image = pipe(image=input_images,
