@@ -99,7 +99,8 @@ def handler(job):
         input_images = []
         for image_url in image_urls:
             input_images.append(load_image(image_url))
-        logger.info(f"IMAGES DOWNLOADED FOR: {(time.time()) - start_time}")
+        download_time = time.time() - start_time
+        logger.info(f"IMAGES DOWNLOADED FOR: {download_time}")
         with torch.inference_mode(), torch.autocast("cuda",
                                                     dtype=torch.bfloat16):
             output_image = pipe(image=input_images,
