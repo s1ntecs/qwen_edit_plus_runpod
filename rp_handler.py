@@ -67,10 +67,6 @@ pipe.load_lora_weights(
 pipe.set_adapters(["material", "lightning"],
                   adapter_weights=[1.0, 1.0])
 
-# 3) Фьюзим их в базовые веса (одна матрица вместо базовой+LoRA)
-pipe.fuse_lora(adapter_names=["material", "lightning"],
-               lora_scale=1.0)
-
 pipe = pipe.to("cuda")
 
 
@@ -92,27 +88,30 @@ def handler(job):
         steps = input_data.get("steps", 8)
         cfg_scale = float(input_data.get("cfg_scale", 1.0))
 
-        if not image_urls:
-            return {"error": "Missing 'images' parameter."}
+        if not image_urls or len(image_urls) == 0:
+            return {"error": "Missing 'images' parameter or empty list."}
 
         start_time = time.time()
         input_images = []
         for image_url in image_urls:
             input_images.append(load_image(image_url))
-        download_time = time.time() - start_time
-        logger.info(f"IMAGES DOWNLOADED FOR: {download_time}")
+
+        orig_img = input_images[0]
+        width, height = orig_img.size
+        logger.info(f"IMAGES DOWNLOADED FOR: {time.time() - start_time}")
         with torch.inference_mode(), torch.autocast("cuda",
                                                     dtype=torch.bfloat16):
             output_image = pipe(image=input_images,
                                 num_inference_steps=steps,
                                 true_cfg_scale=cfg_scale,
+                                width=width, height=height,
                                 negative_prompt=negative_prompt,
                                 prompt=prompt).images[0]
             b_64_img = pil_to_b64(output_image)
 
         return {
             "images_base64": [b_64_img],
-            "time": round(time.time() - job.get("created", start_time),
+            "time": round(time.time() - job["created"],
                           2) if "created" in job else None,
             "steps": steps,
             "seed": "N/A"
