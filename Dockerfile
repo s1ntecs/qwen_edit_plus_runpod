@@ -22,4 +22,3 @@ RUN python download_checkpoints_2511.py
 # CMD ["python", "rp_handler.py"]
 # Set entrypoint
 CMD ["python", "rp_handler_2511.py"]
-511.py"]
