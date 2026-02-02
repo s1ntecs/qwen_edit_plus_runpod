@@ -10,6 +10,10 @@ RUN pip install --no-cache-dir sageattention>=1.0.0 || echo "sage-attention not 
 # Copy handler file
 WORKDIR /app
 COPY rp_handler_2511.py .
+
+ARG HF_TOKEN
+ENV HF_TOKEN=${HF_TOKEN}
+
 # COPY download_checkpoints.py .
 COPY download_checkpoints_2511.py .
 RUN python download_checkpoints_2511.py
@@ -18,3 +22,4 @@ RUN python download_checkpoints_2511.py
 # CMD ["python", "rp_handler.py"]
 # Set entrypoint
 CMD ["python", "rp_handler_2511.py"]
+511.py"]
