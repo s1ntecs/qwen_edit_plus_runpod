@@ -4,8 +4,8 @@ FROM runpod/pytorch:1.0.2-cu1281-torch271-ubuntu2204
 # Install dependencies
 RUN pip install --no-cache-dir diffusers transformers accelerate safetensors pillow runpod hf_transfer bitsandbytes peft git+https://github.com/huggingface/diffusers
 
-# (Optional) Pre-download the model to reduce cold start latency
-# RUN python -c "from diffusers import DiffusionPipeline; DiffusionPipeline.from_pretrained('Qwen/Qwen-Image-Edit-2509')"
+# Install sage-attention for optimized attention (required by LightX2V)
+RUN pip install --no-cache-dir sageattention>=1.0.0 || echo "sage-attention not available"
 
 # Copy handler file
 WORKDIR /app
@@ -13,7 +13,9 @@ COPY rp_handler.py .
 COPY download_checkpoints.py .
 COPY models ./models
 
-RUN python download_checkpoints.py
+# RUN python download_checkpoints.py
+RUN python download_checkpoints_2511.py
 
 # Set entrypoint
-CMD ["python", "rp_handler.py"]
+# CMD ["python", "rp_handler.py"]
+CMD ["python", "rp_handler_2511.py"]
