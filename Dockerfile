@@ -14,6 +14,10 @@ COPY rp_handler.py .
 COPY download_checkpoints_2511.py .
 COPY models ./models
 
+# Hugging Face token for authenticated downloads during build
+ARG HF_TOKEN
+ENV HF_TOKEN=${HF_TOKEN}
+
 # RUN python download_checkpoints.py
 RUN python download_checkpoints_2511.py
 
