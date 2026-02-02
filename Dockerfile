@@ -10,7 +10,8 @@ RUN pip install --no-cache-dir sageattention>=1.0.0 || echo "sage-attention not 
 # Copy handler file
 WORKDIR /app
 COPY rp_handler.py .
-COPY download_checkpoints.py .
+# COPY download_checkpoints.py .
+COPY download_checkpoints_2511.py .
 COPY models ./models
 
 # RUN python download_checkpoints.py
